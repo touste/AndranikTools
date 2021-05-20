@@ -141,33 +141,33 @@ console.print(Rule())
 console.print("Measure the width by clicking on each side of the sample", style="green bold")
 console.print("Click on two points at each side of the mask. Repeat as many times as you wish. \nThen press any key to continue.", style="italic")
 
-# Process lines: draw them, extract section length, ...
+# Process lines: draw them, extract width length, ...
 lines = []
-sections = []
-def drawsection():
+widths = []
+def drawwidth():
     l = lines[-1]
     row = int((l[0][1]+l[1][1])/2)
     startcol = min(l[0][0], l[1][0])
     endcol = max(l[0][0], l[1][0])
     if mask[row, startcol]>0: mask[:] = 255-mask[:]
     rowvals = mask[row, startcol:endcol+1]
-    sectionpx = sum(rowvals>0)
+    widthpx = sum(rowvals>0)
     truevals = np.where(rowvals>0)
     x0 = truevals[0][0] + startcol
     x1 = truevals[0][-1] + startcol
     cv.line(mask_disp, (x0, row), (x1, row), (0, 255, 255), 2)
     cv.circle(mask_disp, (x0, row), radius=2, color=(0, 255, 255), thickness=-1)
     cv.circle(mask_disp, (x1, row), radius=2, color=(0, 255, 255), thickness=-1)
-    sectionmm = sectionpx*pxtomm
-    sections.append(sectionmm)
-    sectiontext = "{:.3f}".format(sectionmm)
-    textsize = cv.getTextSize(sectiontext, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
+    widthmm = widthpx*pxtomm
+    widths.append(widthmm)
+    widthtext = "{:.3f}".format(widthmm)
+    textsize = cv.getTextSize(widthtext, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
     textX = int((x0+x1)/2 - textsize[0]/2)
     textY = row-3
-    cv.putText(mask_disp, sectiontext, (textX, textY), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+    cv.putText(mask_disp, widthtext, (textX, textY), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
     utils.imshow_scaled("Final", mask_disp)
     
-cv.setMouseCallback("Final", utils.lineinput, (lines, mask_disp, mask_disp.copy(), drawsection, "Final"))
+cv.setMouseCallback("Final", utils.lineinput, (lines, mask_disp, mask_disp.copy(), drawwidth, "Final"))
 
 cv.waitKey(0)
 
@@ -177,16 +177,16 @@ cv.waitKey(0)
 console.print(Rule())
 console.print("Select result file", style="green bold")
 ft = [("CSV files", "*.csv")]
-outfile = filedialog.asksaveasfilename(title = "Result file",  initialfile = "section.csv", filetypes = ft, defaultextension = ft)
+outfile = filedialog.asksaveasfilename(title = "Result file",  initialfile = "width.csv", filetypes = ft, defaultextension = ft)
 with open(outfile, "w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Section width [mm]"])
-    for s in sections:
+    writer.writerow(["Width [mm]"])
+    for s in widths:
         writer.writerow([s])
     writer.writerow(["Average [mm]"])
-    writer.writerow([np.mean(sections)])
+    writer.writerow([np.mean(widths)])
     writer.writerow(["St. dev [mm]"])
-    writer.writerow([np.std(sections)])
+    writer.writerow([np.std(widths)])
 
 console.print(Rule())
 console.print("Success! Exit...")

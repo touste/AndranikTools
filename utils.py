@@ -99,3 +99,44 @@ def pointdraw(im, x, y):
 def linedraw(im, pts):
     p0, p1 = pts
     cv.line(im, p0, p1, (0,0,255), 2)
+    
+    
+
+# Draw roi on image
+def draw_roi(im, roi):
+    (x, y, w, h) = [int(v) for v in roi]
+    cv.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+# Draw line between two rois
+def draw_segment(im, roi1, roi2):
+    c1 = ROIcenter(roi1)
+    c2 = ROIcenter(roi2)
+    cv.line(im, (int(c1[0]), int(c1[1])), (int(c2[0]), int(c2[1])), (0, 255, 0), 2)
+
+# Get ROI center
+def ROIcenter(roi):
+    (x, y, w, h) = [v for v in roi]
+    return (x+w/2, y+h/2)
+
+# Compute length between centers of two rois
+def compute_length(roi1, roi2):
+    (x1, y1, w1, h1) = [v for v in roi1]
+    (x2, y2, w2, h2) = [v for v in roi2]
+    return np.sqrt((x1+w1/2 - x2-w2/2)**2 + (y1+h1/2 - y2-h2/2)**2)
+
+# Compute displacement magnitude from initial point
+def compute_disp(p1, p0):
+    return np.sqrt((p1[0]-p0[0])**2 + (p1[1]-p0[1])**2)
+
+# Update plot with new data
+def update_plot(line1, ax1, line2, ax2, fig, xdata, ydata1, ydata2):
+    line1.set_xdata(xdata)
+    line1.set_ydata(ydata1)
+    ax1.relim()
+    ax1.autoscale_view()
+    line2.set_xdata(xdata)
+    line2.set_ydata(ydata2)
+    ax2.relim()
+    ax2.autoscale_view()
+    fig.canvas.draw()
+    fig.canvas.flush_events()

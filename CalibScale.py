@@ -1,23 +1,12 @@
 import numpy as np
 import sys
 import cv2 as cv
+import utils
 from tkinter import Tk, filedialog
 from rich.prompt import Prompt
 from rich.console import Console    
 from rich.rule import Rule
 from rich.text import Text
-
-def imshow_scaled(name, im, top=1, maxedge=1000):
-    cv.imshow(name, im)
-    h, w, _ = im.shape
-    if h>w:
-        w = int(maxedge*w/h)
-        h = int(maxedge)
-    else:
-        h = int(maxedge*h/w)
-        w = int(maxedge)
-    cv.resizeWindow(name, (w, h))
-    cv.setWindowProperty(name, cv.WND_PROP_TOPMOST, top)
 
 console = Console()
 
@@ -57,7 +46,7 @@ cv.drawChessboardCorners(im, (nrows, ncols), corners, detected)
 
 # Draw checkerboard
 cv.namedWindow("Checkerboard", cv.WINDOW_NORMAL)
-imshow_scaled("Checkerboard", im)
+utils.imshow_scaled("Checkerboard", im)
 
 console.print("Press ENTER to validate and write the calibration data, else press any other key to abort.", style="yellow bold blink")
 key = cv.waitKey(0)
