@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
 import dlib
+import matplotlib.pyplot as plt
 
 def getTranslationMatrix2d(dx, dy):
     """
@@ -116,31 +117,26 @@ def draw_segment(im, roi1, roi2):
 
 # Get ROI center
 def ROIcenter(roi):
-    (x, y, w, h) = [v for v in roi]
+    (x, y, w, h) = roi
     return (x+w/2, y+h/2)
 
-# Compute length between centers of two rois
-def compute_length(roi1, roi2):
-    (x1, y1, w1, h1) = [v for v in roi1]
-    (x2, y2, w2, h2) = [v for v in roi2]
+# Compute distance between centers of two rois
+def compute_roidistance(roi1, roi2):
+    (x1, y1, w1, h1) = roi1
+    (x2, y2, w2, h2) = roi2
     return np.sqrt((x1+w1/2 - x2-w2/2)**2 + (y1+h1/2 - y2-h2/2)**2)
 
-# Compute displacement magnitude from initial point
-def compute_disp(p1, p0):
+# Compute distance
+def compute_pointdistance(p1, p0):
     return np.sqrt((p1[0]-p0[0])**2 + (p1[1]-p0[1])**2)
 
 # Update plot with new data
-def update_plot(line1, ax1, line2, ax2, fig, xdata, ydata1, ydata2):
-    line1.set_xdata(xdata)
-    line1.set_ydata(ydata1)
-    ax1.relim()
-    ax1.autoscale_view()
-    line2.set_xdata(xdata)
-    line2.set_ydata(ydata2)
-    ax2.relim()
-    ax2.autoscale_view()
+def update_plot(sc1, sc2, fig, xdata, ydata1, ydata2):
+    sc1.set_offsets(np.c_[xdata,ydata1])
+    sc2.set_offsets(np.c_[xdata,ydata2])
     fig.canvas.draw()
     fig.canvas.flush_events()
+    #fig.canvas.draw_idle()
     
 # take a bounding predicted by opencv and convert it
 # to the dlib (left, top, right, bottom) 
@@ -164,3 +160,15 @@ def rect_to_bb(rect):
 
     # return a tuple of (x, y, w, h)
     return (x, y, w, h)
+
+
+def read_scale(filename):
+    with open(filename, 'r', encoding='utf-8', errors='ignore') as f:
+        for line in f:
+            istart = line.find('<sizeOfPixel>')
+            if istart != -1:
+                istart = istart + len('<sizeOfPixel>')
+                iend = line.find('</sizeOfPixel>')
+                v = line[istart:iend]
+                return float(v)
+            
