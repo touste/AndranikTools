@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import dlib
 
 def getTranslationMatrix2d(dx, dy):
     return np.matrix([[1, 0, dx], [0, 1, dy], [0, 0, 1]])
@@ -132,3 +133,26 @@ def update_plot(line1, ax1, line2, ax2, fig, xdata, ydata1, ydata2):
     ax2.autoscale_view()
     fig.canvas.draw()
     fig.canvas.flush_events()
+    
+# take a bounding predicted by opencv and convert it
+# to the dlib (left, top, right, bottom) 
+def bb_to_rect(bb):
+    top=bb[1]
+    left=bb[0]
+    right=bb[0]+bb[2]
+    bottom=bb[1]+bb[3]
+    return dlib.rectangle(left, top, right, bottom) 
+
+
+# take a bounding predicted by dlib and convert it
+# to the format (x, y, w, h) as we would normally do
+# with OpenCV
+def rect_to_bb(rect):
+
+    x = rect.left()
+    y = rect.top()
+    w = rect.right() - x
+    h = rect.bottom() - y
+
+    # return a tuple of (x, y, w, h)
+    return (x, y, w, h)
