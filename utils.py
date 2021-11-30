@@ -2,16 +2,9 @@ import numpy as np
 import cv2 as cv
 
 def getTranslationMatrix2d(dx, dy):
-    """
-    Returns a numpy affine transformation matrix for a 2D translation of
-    (dx, dy)
-    """
     return np.matrix([[1, 0, dx], [0, 1, dy], [0, 0, 1]])
 
 def rotateImage(image, angle):
-    """
-    Rotates the given image about it"s centre
-    """
 
     image_size = (image.shape[1], image.shape[0])
     image_center = tuple(np.array(image_size) / 2)
@@ -80,17 +73,16 @@ def lineinput(event, x, y, flags, params):
             pointdraw(imtodraw, x,y)
             lines.append([])
             lines[-1].append((x,y))
-        else: # Second line point
-            pointdraw(imtodraw, x,y)
-            lines[-1].append((x,y))
-            linedraw(imtodraw, lines[-1])
-            postdrawfun()
+    if event == cv.EVENT_MOUSEMOVE and flags == cv.EVENT_FLAG_LBUTTON:
+        imtodrawbuf[:] = imtodraw[:]
+        linedraw(imtodrawbuf, lines[-1] + [(x, y)])
+        imshow_scaled(figname, imtodrawbuf)
+    if event == cv.EVENT_LBUTTONUP:
+        pointdraw(imtodraw, x,y)
+        lines[-1].append((x,y))
+        linedraw(imtodraw, lines[-1])
+        postdrawfun()
         imshow_scaled(figname, imtodraw)
-    elif event == cv.EVENT_MOUSEMOVE:
-        if len(lines) > 0 and len(lines[-1]) % 2 != 0:
-            imtodrawbuf[:] = imtodraw[:]
-            linedraw(imtodrawbuf, lines[-1] + [(x, y)])
-            imshow_scaled(figname, imtodrawbuf)
             
 
 def pointdraw(im, x, y):

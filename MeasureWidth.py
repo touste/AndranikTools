@@ -52,8 +52,8 @@ utils.imshow_scaled("Reference", imcrop_disp)
 
 # Get sample axis
 console.print(Rule())
-console.print("Select two points on each end of the sample", style="green bold")
-console.print("These points will be used to correct the vertical axis by rotating the image.", style="italic")
+console.print("Draw a line along the longitudinal direction of the sample", style="green bold")
+console.print("Click and drag to draw a line that will be used to correct the vertical axis by rotating the image.", style="italic")
 lines = []
 cv.setMouseCallback("Reference", utils.lineinput, (lines, imcrop_disp, imcrop_disp.copy(), lambda : None, "Reference"))
 
@@ -138,8 +138,8 @@ cv.namedWindow("Final", cv.WINDOW_NORMAL)
 utils.imshow_scaled("Final", mask_disp)
 
 console.print(Rule())
-console.print("Measure the width by clicking on each side of the sample", style="green bold")
-console.print("Click on two points at each side of the mask. Repeat as many times as you wish. \nThen press any key to continue.", style="italic")
+console.print("Measure the width by drawing a line", style="green bold")
+console.print("Click and drag to draw a line crossing the width of the sample. Repeat as many times as you wish. \nThen press any key to continue.", style="italic")
 
 # Process lines: draw them, extract width length, ...
 lines = []
@@ -165,7 +165,6 @@ def drawwidth():
     textX = int((x0+x1)/2 - textsize[0]/2)
     textY = row-3
     cv.putText(mask_disp, widthtext, (textX, textY), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
-    utils.imshow_scaled("Final", mask_disp)
     
 cv.setMouseCallback("Final", utils.lineinput, (lines, mask_disp, mask_disp.copy(), drawwidth, "Final"))
 
