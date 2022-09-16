@@ -151,10 +151,10 @@ def drawwidth():
     endcol = max(l[0][0], l[1][0])
     if mask[row, startcol]>0: mask[:] = 255-mask[:]
     rowvals = mask[row, startcol:endcol+1]
-    widthpx = sum(rowvals>0)
     truevals = np.where(rowvals>0)
     x0 = truevals[0][0] + startcol
     x1 = truevals[0][-1] + startcol
+    widthpx = abs(x1-x0)
     cv.line(mask_disp, (x0, row), (x1, row), (0, 255, 255), 2)
     cv.circle(mask_disp, (x0, row), radius=2, color=(0, 255, 255), thickness=-1)
     cv.circle(mask_disp, (x1, row), radius=2, color=(0, 255, 255), thickness=-1)

@@ -108,7 +108,7 @@ for r in ROIS:
 vid = cv.VideoWriter(imdir + '/tracking.mp4', cv.VideoWriter_fourcc(*'mp4v'), 20, (imref.shape[1], imref.shape[0]))
 
 
-trackinfo = [[utils.rect_to_bb(t.get_position()) for t in trackers]]
+trackinfo = [[utils.ROIcenter(utils.rect_to_bb(t.get_position())) for t in trackers]]
 # Loop for every file
 for i in track(range(nimages), total=nimages-1, description="Tracking Frames: "):
     if isvideo:
